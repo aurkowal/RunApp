@@ -1,0 +1,13 @@
+###
+
+POST http://localhost:8080/routes/generate
+Content-Type: application/json
+
+{
+  "startLat": 52.2297,
+  "startLon": 21.0122,
+  "endLat": 52.2350,
+  "endLon": 21.0200
+}
+
+###
