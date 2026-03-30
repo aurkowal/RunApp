@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class RunRoute {
 
 
@@ -15,14 +16,30 @@ public class RunRoute {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double distance;   // metry
-    private double duration;   // sekundy
+    private double distance;   //metry, rzeczywisty z API
+    private double duration;   //sekundy, czas podany z API, orientacyjny czas chodu
+
+    private double plannedDistance;  // zadany przez usera
+
 
     @Column(columnDefinition = "TEXT")
-    private String geometry;   // polyline z ORS
+    private String geometry;   //polyline z ORS
 
 
-    public RunRoute() {}
+    @ManyToOne
+    @JoinColumn(name = "runner_id")
+    private Runner runner;
+
+    @ManyToOne
+    @JoinColumn(name = "start_location_id")
+    private Location startLocation;
+
+    @ManyToOne
+    @JoinColumn(name = "end_location_id")
+    private Location endLocation;
+
+
+
 
     public RunRoute(double distance, double duration, String geometry) {
         this.distance = distance;
