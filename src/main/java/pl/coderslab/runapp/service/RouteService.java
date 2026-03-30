@@ -8,12 +8,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import pl.coderslab.runapp.DTO.RouteRequestDto;
-import pl.coderslab.runapp.DTO.RouteResponseDto;
+import pl.coderslab.runapp.DTO.route.RouteByDistanceRequestDto;
+import pl.coderslab.runapp.DTO.route.RouteRequestDto;
+import pl.coderslab.runapp.DTO.route.RouteResponseDto;
+import pl.coderslab.runapp.entity.Location;
 import pl.coderslab.runapp.entity.RunRoute;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import pl.coderslab.runapp.entity.Runner;
+import pl.coderslab.runapp.repository.LocationRepository;
 import pl.coderslab.runapp.repository.RunRouteRepository;
+import pl.coderslab.runapp.repository.RunnerRepository;
 
 import java.util.Map;
 
@@ -21,28 +26,139 @@ import java.util.Map;
 public class RouteService {
 
     private final RestTemplate restTemplate;
-    private final RunRouteRepository repository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RunRouteRepository runRouteRepository;
+    private final RunnerRepository runnerRepository;
+    private final LocationRepository locationRepository;
+    private final ObjectMapper objectMapper;
 
     @Value("${ors.api-key}")
     private String apiKey;
 
-    public RouteService(RestTemplate restTemplate, RunRouteRepository repository) {
+    public RouteService(RestTemplate restTemplate, RunRouteRepository runRouteRepository, RunnerRepository runnerRepository, LocationRepository locationRepository, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
-        this.repository = repository;
+        this.runRouteRepository = runRouteRepository;
+        this.runnerRepository = runnerRepository;
+        this.locationRepository = locationRepository;
+        this.objectMapper = objectMapper;
     }
+
+
+    // TRASA z punktu A do B
 
     public RouteResponseDto generateRoute(RouteRequestDto request) {
 
+        Runner runner = runnerRepository.findById(request.getRunnerId()).get();
+        Location startLocation =
+                locationRepository.findById(request.getStartLocationId()).get();
+        Location endLocation =
+                locationRepository.findById(request.getEndLocationId()).get();
+
+        double startLat = startLocation.getLatitude();
+        double startLon = startLocation.getLongitude();
+        double endLat = endLocation.getLatitude();
+        double endLon = endLocation.getLongitude();
+
+
+        // --- PUNKT POŚREDNI ---
+        double midLat = (startLat + endLat) / 2;
+        double midLon = (startLon + endLon) / 2;
+
+        // losowe odchylenie (ok. 200–400 m)
+        double maxOffset = 0.003; // ~300 m
+        double offsetLat = (Math.random() - 0.5) * maxOffset;
+        double offsetLon = (Math.random() - 0.5) * maxOffset;
+
+        midLat += offsetLat;
+        midLon += offsetLon;
+
+        // --- DWIE NOGI TRASY ---
+        RunRoute firstLeg = callOrsAndCreateRoute(
+                startLat, startLon,
+                midLat, midLon
+        );
+
+        RunRoute secondLeg = callOrsAndCreateRoute(
+                midLat, midLon,
+                endLat, endLon
+        );
+
+        RunRoute route = new RunRoute(
+                firstLeg.getDistance() + secondLeg.getDistance(),
+                firstLeg.getDuration() + secondLeg.getDuration(),
+                firstLeg.getGeometry() + secondLeg.getGeometry()
+        );
+
+
+        route.setRunner(runner);
+        route.setStartLocation(startLocation);
+        route.setEndLocation(endLocation);
+        route.setPlannedDistance(request.getPlannedDistance());
+
+        RunRoute saved = runRouteRepository.save(route);
+
+        return new RouteResponseDto(
+                saved.getId(),
+                saved.getDistance(),
+                saved.getDuration()
+        );
+    }
+
+
+
+    // TRASA pętla
+    // A -> B, B -> A
+
+    public RouteResponseDto generateLoopRoute(RouteByDistanceRequestDto request) {
+
+        Runner runner = runnerRepository.findById(request.getRunnerId()).get();
+        Location startLocation = locationRepository.findById(request.getStartLocationId()).get();
+
+        double startLat = startLocation.getLatitude();
+        double startLon = startLocation.getLongitude();
+
+        double delta = (request.getTargetDistance() / 2.0) / 111_000.0;
+        double angle = Math.random() * 2 * Math.PI;
+
+        double midLat = startLat + delta * Math.cos(angle);
+        double midLon = startLon + delta * Math.sin(angle);
+
+
+        RunRoute first = callOrsAndCreateRoute(startLat, startLon, midLat, midLon);
+        RunRoute second = callOrsAndCreateRoute(midLat, midLon, startLat, startLon);
+
+        RunRoute loop = new RunRoute(
+                first.getDistance() + second.getDistance(),
+                first.getDuration() + second.getDuration(),
+                first.getGeometry() + second.getGeometry()
+        );
+
+        loop.setRunner(runner);
+        loop.setStartLocation(startLocation);
+        loop.setEndLocation(startLocation);
+        loop.setPlannedDistance(request.getTargetDistance());
+
+        RunRoute saved = runRouteRepository.save(loop);
+
+        return new RouteResponseDto(
+                saved.getId(),
+                saved.getDistance(),
+                saved.getDuration()
+        );
+    }
+
+
+
+
+
+
+    /**
+     * Wywołanie ORS i utworzenie obiektu RunRoute  -> METODA POMOCNICZA DO INNYCH METOD
+     */
+    private RunRoute callOrsAndCreateRoute(double startLat, double startLon, double endLat, double endLon) {
+
         String url = "https://api.openrouteservice.org/v2/directions/foot-walking";
 
-        // body do ORS
-        Map<String, Object> body = Map.of(
-                "coordinates", new double[][]{
-                        {request.getStartLon(), request.getStartLat()},
-                        {request.getEndLon(), request.getEndLat()}
-                }
-        );
+        Map<String, Object> body = Map.of("coordinates", new double[][]{{startLon, startLat}, {endLon, endLat}});
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -50,8 +166,7 @@ public class RouteService {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<String> response =
-                restTemplate.postForEntity(url, entity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         try {
             JsonNode root = objectMapper.readTree(response.getBody());
@@ -61,14 +176,7 @@ public class RouteService {
             double duration = summary.path("duration").asDouble();
             String geometry = root.path("routes").get(0).path("geometry").asText();
 
-            RunRoute route = new RunRoute(distance, duration, geometry);
-            RunRoute saved = repository.save(route);
-
-            return new RouteResponseDto(
-                    saved.getId(),
-                    saved.getDistance(),
-                    saved.getDuration()
-            );
+            return new RunRoute(distance, duration, geometry);
 
         } catch (Exception e) {
             throw new RuntimeException("Error while calling ORS API", e);
