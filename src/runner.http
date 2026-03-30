@@ -1,0 +1,28 @@
+###
+POST http://localhost:8080/runners
+Content-Type: application/json
+
+{
+  "name": "Ola",
+  "email": "ola123@wp.pl"
+}
+###
+
+GET http://localhost:8080/runners
+
+###
+
+GET http://localhost:8080/runners/2
+
+###
+
+PUT http://localhost:8080/runners/7
+Content-Type: application/json
+
+{
+  "name": "Piotrek",
+  "email": "piter.pan@wp.pl"
+}
+
+###
+DELETE http://localhost:8080/runners/8

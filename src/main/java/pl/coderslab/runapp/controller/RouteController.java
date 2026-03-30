@@ -13,10 +13,13 @@ import pl.coderslab.runapp.service.RouteService;
 
 @RestController
 @RequestMapping("/routes")
-@RequiredArgsConstructor
 public class RouteController {
 
     private final RouteService routeService;
+
+    public RouteController(RouteService routeService) {
+        this.routeService = routeService;
+    }
 
     @PostMapping("/generate")
     public RouteResponseDto generate(@RequestBody RouteRequestDto request) {
