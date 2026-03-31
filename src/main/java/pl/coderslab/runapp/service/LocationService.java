@@ -48,10 +48,6 @@ public class LocationService {
     }
 
 
-
-
-
-
     private LocationResponseDto toDto(Location location) {
         return new LocationResponseDto(
                 location.getId(),
