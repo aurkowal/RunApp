@@ -6,4 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/training")
 public class TrainingController {
+
+
+//    POST   /trainings
+//    GET    /runners/{id}/trainings
+//    GET    /trainings/{id}
+//    DELETE /trainings/{id}
+
 }

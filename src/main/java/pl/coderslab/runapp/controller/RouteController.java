@@ -1,7 +1,5 @@
 package pl.coderslab.runapp.controller;
 
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,4 +28,10 @@ public class RouteController {
     public RouteResponseDto generateLoop(@RequestBody RouteByDistanceRequestDto request) {
         return routeService.generateLoopRoute(request);
     }
+
+
+//    GET /routes                  // (opcjonalnie admin / debug)
+//    GET /runners/{id}/routes     // WSZYSTKIE trasy użytkownika
+//    GET /routes/{id}             // szczegóły trasy
+
 }

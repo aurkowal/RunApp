@@ -105,8 +105,8 @@ public class RouteService {
 
 
 
-    // TRASA pętla
-    // A -> B, B -> A
+//     TRASA pętla
+//     A -> B, B -> A
 
     public RouteResponseDto generateLoopRoute(RouteByDistanceRequestDto request) {
 
@@ -151,9 +151,9 @@ public class RouteService {
 
 
 
-    /**
-     * Wywołanie ORS i utworzenie obiektu RunRoute  -> METODA POMOCNICZA DO INNYCH METOD
-     */
+
+     //Wywołanie ORS i utworzenie obiektu RunRoute  -> METODA POMOCNICZA DO INNYCH METOD
+
     private RunRoute callOrsAndCreateRoute(double startLat, double startLon, double endLat, double endLon) {
 
         String url = "https://api.openrouteservice.org/v2/directions/foot-walking";
