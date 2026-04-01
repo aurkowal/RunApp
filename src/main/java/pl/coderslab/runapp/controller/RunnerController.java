@@ -3,7 +3,6 @@ package pl.coderslab.runapp.controller;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.runapp.DTO.runner.RunnerCreateRequestDto;
 import pl.coderslab.runapp.DTO.runner.RunnerResponseDto;
-import pl.coderslab.runapp.entity.Runner;
 import pl.coderslab.runapp.service.RunnerService;
 
 import java.util.List;

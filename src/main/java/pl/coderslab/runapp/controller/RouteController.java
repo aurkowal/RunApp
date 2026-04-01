@@ -1,12 +1,10 @@
 package pl.coderslab.runapp.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.coderslab.runapp.DTO.route.RouteByDistanceRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteResponseDto;
+import pl.coderslab.runapp.DTO.route.RunRouteDetailsDto;
 import pl.coderslab.runapp.service.RouteService;
 
 @RestController
@@ -27,6 +25,11 @@ public class RouteController {
     @PostMapping("/loop")
     public RouteResponseDto generateLoop(@RequestBody RouteByDistanceRequestDto request) {
         return routeService.generateLoopRoute(request);
+    }
+
+    @GetMapping("/{id}")
+    public RunRouteDetailsDto getRoute(@PathVariable("id") Long id) {
+        return routeService.getRoute(id);
     }
 
 

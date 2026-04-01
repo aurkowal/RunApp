@@ -1,18 +1,20 @@
 ### dodanie lokalizacji do biegacza
-POST http://localhost:8080/runners/6/locations
+POST http://localhost:8080/runners/4/locations
 Content-Type: application/json
 
 {
-  "placeName": "Praca",
-  "latitude": 52.2333,
-  "longitude": 21.0061
+  "placeName": "Legionowo",
+  "latitude": 52.4015,
+  "longitude": 20.9266
 }
+
+
 
 ###
 GET http://localhost:8080/locations/20
 
 ### wszystkie lokacje danego biegacza
-GET http://localhost:8080/runners/1/locations
+GET http://localhost:8080/runners/6/locations
 
 ###
 DELETE http://localhost:8080/locations/21

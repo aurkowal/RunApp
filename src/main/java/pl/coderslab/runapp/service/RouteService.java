@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import pl.coderslab.runapp.DTO.route.RouteByDistanceRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteResponseDto;
+import pl.coderslab.runapp.DTO.route.RunRouteDetailsDto;
 import pl.coderslab.runapp.entity.Location;
 import pl.coderslab.runapp.entity.RunRoute;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,52 +43,34 @@ public class RouteService {
         this.objectMapper = objectMapper;
     }
 
+    // do narysowania mapy
+
+    public RunRouteDetailsDto getRoute(Long id) {
+        RunRoute runRoute = runRouteRepository.findById(id).get();
+        return new RunRouteDetailsDto(
+                runRoute.getId(),
+                runRoute.getGeometry(),
+                runRoute.getDistance()
+        );
+    }
+
 
     // TRASA z punktu A do B
 
     public RouteResponseDto generateRoute(RouteRequestDto request) {
 
         Runner runner = runnerRepository.findById(request.getRunnerId()).get();
-        Location startLocation =
-                locationRepository.findById(request.getStartLocationId()).get();
-        Location endLocation =
-                locationRepository.findById(request.getEndLocationId()).get();
+        Location startLocation = locationRepository
+                .findById(request.getStartLocationId()).get();
+        Location endLocation = locationRepository
+                .findById(request.getEndLocationId()).get();
 
-        double startLat = startLocation.getLatitude();
-        double startLon = startLocation.getLongitude();
-        double endLat = endLocation.getLatitude();
-        double endLon = endLocation.getLongitude();
-
-
-        // --- PUNKT POŚREDNI ---
-        double midLat = (startLat + endLat) / 2;
-        double midLon = (startLon + endLon) / 2;
-
-        // losowe odchylenie (ok. 200–400 m)
-        double maxOffset = 0.003; // ~300 m
-        double offsetLat = (Math.random() - 0.5) * maxOffset;
-        double offsetLon = (Math.random() - 0.5) * maxOffset;
-
-        midLat += offsetLat;
-        midLon += offsetLon;
-
-        // --- DWIE NOGI TRASY ---
-        RunRoute firstLeg = callOrsAndCreateRoute(
-                startLat, startLon,
-                midLat, midLon
+        RunRoute route = callOrsAndCreateRoute(
+                startLocation.getLatitude(),
+                startLocation.getLongitude(),
+                endLocation.getLatitude(),
+                endLocation.getLongitude()
         );
-
-        RunRoute secondLeg = callOrsAndCreateRoute(
-                midLat, midLon,
-                endLat, endLon
-        );
-
-        RunRoute route = new RunRoute(
-                firstLeg.getDistance() + secondLeg.getDistance(),
-                firstLeg.getDuration() + secondLeg.getDuration(),
-                firstLeg.getGeometry() + secondLeg.getGeometry()
-        );
-
 
         route.setRunner(runner);
         route.setStartLocation(startLocation);
@@ -104,7 +87,6 @@ public class RouteService {
     }
 
 
-
 //     TRASA pętla
 //     A -> B, B -> A
 
@@ -113,23 +95,10 @@ public class RouteService {
         Runner runner = runnerRepository.findById(request.getRunnerId()).get();
         Location startLocation = locationRepository.findById(request.getStartLocationId()).get();
 
-        double startLat = startLocation.getLatitude();
-        double startLon = startLocation.getLongitude();
-
-        double delta = (request.getTargetDistance() / 2.0) / 111_000.0;
-        double angle = Math.random() * 2 * Math.PI;
-
-        double midLat = startLat + delta * Math.cos(angle);
-        double midLon = startLon + delta * Math.sin(angle);
-
-
-        RunRoute first = callOrsAndCreateRoute(startLat, startLon, midLat, midLon);
-        RunRoute second = callOrsAndCreateRoute(midLat, midLon, startLat, startLon);
-
-        RunRoute loop = new RunRoute(
-                first.getDistance() + second.getDistance(),
-                first.getDuration() + second.getDuration(),
-                first.getGeometry() + second.getGeometry()
+        RunRoute loop = callOrsLoop(
+                startLocation.getLatitude(),
+                startLocation.getLongitude(),
+                request.getTargetDistance()
         );
 
         loop.setRunner(runner);
@@ -147,12 +116,7 @@ public class RouteService {
     }
 
 
-
-
-
-
-
-     //Wywołanie ORS i utworzenie obiektu RunRoute  -> METODA POMOCNICZA DO INNYCH METOD
+    //Wywołanie ORS i utworzenie obiektu RunRoute  -> METODA POMOCNICZA DO INNYCH METOD
 
     private RunRoute callOrsAndCreateRoute(double startLat, double startLon, double endLat, double endLon) {
 
@@ -180,6 +144,42 @@ public class RouteService {
 
         } catch (Exception e) {
             throw new RuntimeException("Error while calling ORS API", e);
+        }
+    }
+
+    private RunRoute callOrsLoop(double lat, double lon, int targetDistance) {
+
+        String url = "https://api.openrouteservice.org/v2/directions/foot-walking";
+
+        Map<String, Object> body = Map.of(
+                "coordinates", new double[][]{{lon, lat}},
+                "options", Map.of(
+                        "round_trip", Map.of(
+                                "length", targetDistance,
+                                "seed", (int) (Math.random() * 1000)
+                        )
+                )
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", apiKey);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+
+        try {
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode summary = root.path("routes").get(0).path("summary");
+
+            double distance = summary.path("distance").asDouble();
+            double duration = summary.path("duration").asDouble();
+            String geometry = root.path("routes").get(0).path("geometry").asText();
+
+            return new RunRoute(distance, duration, geometry);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while calling ORS round-trip API", e);
         }
     }
 }
