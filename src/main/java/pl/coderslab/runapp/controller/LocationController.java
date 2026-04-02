@@ -1,5 +1,6 @@
 package pl.coderslab.runapp.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.runapp.DTO.location.LocationCreateRequestDto;
 import pl.coderslab.runapp.DTO.location.LocationResponseDto;
@@ -17,7 +18,7 @@ public class LocationController {
     }
 
     @PostMapping("/runners/{runnerId}/locations")
-    public LocationResponseDto createLocation(@PathVariable("runnerId") Long runnerId, @RequestBody LocationCreateRequestDto location) {
+    public LocationResponseDto createLocation(@PathVariable("runnerId") Long runnerId, @Valid @RequestBody LocationCreateRequestDto location) {
         return locationService.createLocation(runnerId, location);
     }
 

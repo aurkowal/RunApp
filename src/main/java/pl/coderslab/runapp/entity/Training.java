@@ -29,5 +29,4 @@ public class Training {
     @ManyToOne
     private RunRoute runRoute;
 
-
 }

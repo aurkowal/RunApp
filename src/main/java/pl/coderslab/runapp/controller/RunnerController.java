@@ -1,5 +1,6 @@
 package pl.coderslab.runapp.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.runapp.DTO.runner.RunnerCreateRequestDto;
 import pl.coderslab.runapp.DTO.runner.RunnerResponseDto;
@@ -18,7 +19,7 @@ public class RunnerController {
     }
     
     @PostMapping
-    public RunnerResponseDto createRunner(@RequestBody RunnerCreateRequestDto request) {
+    public RunnerResponseDto createRunner(@Valid @RequestBody RunnerCreateRequestDto request) {
         return runnerService.createRunner(request);
     }
 
@@ -33,7 +34,7 @@ public class RunnerController {
     }
 
     @PutMapping("/{id}")
-    public RunnerResponseDto updateRunner(@PathVariable("id") Long id, @RequestBody RunnerCreateRequestDto runner) {
+    public RunnerResponseDto updateRunner(@PathVariable("id") Long id, @Valid @RequestBody RunnerCreateRequestDto runner) {
         return runnerService.updateRunner(id, runner);
     }
 

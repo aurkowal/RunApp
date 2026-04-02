@@ -12,6 +12,7 @@ import pl.coderslab.runapp.DTO.route.RouteByDistanceRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteResponseDto;
 import pl.coderslab.runapp.DTO.route.RunRouteDetailsDto;
+import pl.coderslab.runapp.DTO.runner.RunnerRouteGeometryDto;
 import pl.coderslab.runapp.entity.Location;
 import pl.coderslab.runapp.entity.RunRoute;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import pl.coderslab.runapp.repository.LocationRepository;
 import pl.coderslab.runapp.repository.RunRouteRepository;
 import pl.coderslab.runapp.repository.RunnerRepository;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -52,6 +54,20 @@ public class RouteService {
                 runRoute.getGeometry(),
                 runRoute.getDistance()
         );
+    }
+
+    // do narysowania na mapie wszystkich tras danego biegacza
+
+    public List<RunnerRouteGeometryDto> getAllRoutesForRunner(Long runnerId) {
+
+        return runRouteRepository.findAllByRunnerId(runnerId)
+                .stream()
+                .filter(route -> route.getGeometry() != null)
+                .map(route -> new RunnerRouteGeometryDto(
+                        route.getId(),
+                        route.getGeometry()
+                ))
+                .toList();
     }
 
 
@@ -122,7 +138,16 @@ public class RouteService {
 
         String url = "https://api.openrouteservice.org/v2/directions/foot-walking";
 
-        Map<String, Object> body = Map.of("coordinates", new double[][]{{startLon, startLat}, {endLon, endLat}});
+        double[] waypoint = randomWaypoint(startLat, startLon, endLat, endLon);
+
+        Map<String, Object> body = Map.of(
+                "coordinates",
+                new double[][]{
+                        {startLon, startLat},
+                        waypoint,
+                        {endLon, endLat}
+                }
+        );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -181,5 +206,25 @@ public class RouteService {
         } catch (Exception e) {
             throw new RuntimeException("Error while calling ORS round-trip API", e);
         }
+    }
+
+    // ===== LOSOWOŚĆ TRASY A -> B =====
+
+    private double randomOffset(double value, double range) {
+        return value + (Math.random() - 0.5) * range;
+    }
+
+    private double[] randomWaypoint(
+            double startLat, double startLon,
+            double endLat, double endLon
+    ) {
+        double midLat = (startLat + endLat) / 2;
+        double midLon = (startLon + endLon) / 2;
+
+        // UWAGA: ORS wymaga [lon, lat]
+        return new double[]{
+                randomOffset(midLon, 0.003), // longitude
+                randomOffset(midLat, 0.003)  // latitude
+        };
     }
 }

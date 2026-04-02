@@ -3,8 +3,8 @@ POST http://localhost:8080/runners
 Content-Type: application/json
 
 {
-  "name": "Ola",
-  "email": "ola123@wp.pl"
+  "name": "Karolina",
+  "email": "Karola97@gmail.com"
 }
 ###
 
