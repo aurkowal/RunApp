@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RunRouteRepository extends JpaRepository<RunRoute, Long> {
 
-    List<RunRoute> findByRunnerId(Long runnerId);
+    List<RunRoute> findAllByRunnerId(Long runnerId);
 
     List<RunRoute> findByStartLocationId(Long locationId);
 }

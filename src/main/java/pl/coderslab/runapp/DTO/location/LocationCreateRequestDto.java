@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LocationCreateRequestDto {
 
+
     private String placeName;
     private double latitude;
     private double longitude;

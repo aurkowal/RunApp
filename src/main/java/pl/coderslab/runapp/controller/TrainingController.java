@@ -1,5 +1,6 @@
 package pl.coderslab.runapp.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.runapp.DTO.training.TrainingCreateRequestDto;
 import pl.coderslab.runapp.DTO.training.TrainingResponseDto;
@@ -17,7 +18,7 @@ public class TrainingController {
     }
 
     @PostMapping("/runners/{runnerId}/trainings")
-    public TrainingResponseDto addTrainingToRunner(@PathVariable("runnerId") Long runnerId, @RequestBody TrainingCreateRequestDto training) {
+    public TrainingResponseDto addTrainingToRunner(@PathVariable("runnerId") Long runnerId, @Valid @RequestBody TrainingCreateRequestDto training) {
         return trainingService.addNewTraining(runnerId, training);
     }
 

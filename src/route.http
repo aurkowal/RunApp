@@ -4,10 +4,10 @@ POST http://localhost:8080/routes/generate
 Content-Type: application/json
 
 {
-  "runnerId": 1,
-  "startLocationId": 2,
-  "endLocationId": 1,
-  "plannedDistance": 6000
+  "runnerId": 4,
+  "startLocationId": 28,
+  "endLocationId": 27,
+  "plannedDistance": 4000
 }
 
 
@@ -17,7 +17,14 @@ POST http://localhost:8080/routes/loop
 Content-Type: application/json
 
 {
-  "runnerId": 1,
-  "startLocationId": 1,
-  "targetDistance": 5000
+  "runnerId": 7,
+  "startLocationId": 12,
+  "targetDistance": 10000
 }
+
+###
+GET http://localhost:8080/routes/15
+
+###
+GET http://localhost:8080/routes/runners/6/routes
+
