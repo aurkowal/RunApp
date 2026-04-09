@@ -17,13 +17,13 @@ POST http://localhost:8080/routes/loop
 Content-Type: application/json
 
 {
-  "runnerId": 7,
-  "startLocationId": 12,
-  "targetDistance": 10000
+  "runnerId": 1,
+  "startLocationId": 9,
+  "targetDistance": 15000
 }
 
 ###
-GET http://localhost:8080/routes/15
+GET http://localhost:8080/routes/50
 
 ###
 GET http://localhost:8080/routes/runners/6/routes
