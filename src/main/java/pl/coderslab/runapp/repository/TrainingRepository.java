@@ -14,5 +14,6 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
 
     List<Training> findByDateBetween(LocalDate start, LocalDate end);
 
+    List<Training> findByRunnerIdInOrderByDateDesc(List<Long> runnerIds);
 
 }

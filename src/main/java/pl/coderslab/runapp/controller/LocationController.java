@@ -40,6 +40,5 @@ public class LocationController {
 
 
 
-//    DELETE /locations/{id}
 
 }

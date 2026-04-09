@@ -44,8 +44,6 @@ public class RouteController {
 
 
 
-//    GET /routes                  // (opcjonalnie admin / debug)
-//    GET /runners/{id}/routes     // WSZYSTKIE trasy użytkownika
 //    GET /routes/{id}             // szczegóły trasy
 
 }
