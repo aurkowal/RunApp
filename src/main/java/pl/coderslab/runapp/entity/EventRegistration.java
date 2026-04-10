@@ -31,4 +31,8 @@ public class EventRegistration {
     private Event event;
 
 
+    public EventRegistration(Runner runner, Event event) {
+        this.event = event;
+        this.runner = runner;
+    }
 }
