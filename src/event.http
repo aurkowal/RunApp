@@ -1,0 +1,19 @@
+###
+POST http://localhost:8080/events
+Content-Type: application/json
+
+{
+  "name": "Półmaraton Poznański",
+  "date": "2026-04-16",
+  "city": "Poznań",
+  "distance": 21.098
+}
+
+###
+GET http://localhost:8080/events
+
+###
+GET http://localhost:8080/events/6
+
+###
+DELETE http://localhost:8080/events/7
