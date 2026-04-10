@@ -1,4 +1,4 @@
-###
+### dodaj event
 POST http://localhost:8080/events
 Content-Type: application/json
 
@@ -9,11 +9,23 @@ Content-Type: application/json
   "distance": 21.098
 }
 
-###
+### wyswietl dostepne eventy
 GET http://localhost:8080/events
 
-###
+### event po id
 GET http://localhost:8080/events/6
 
-###
+### usun event o id
 DELETE http://localhost:8080/events/7
+
+### zapisz sie na event (eventid, runnerid)
+POST http://localhost:8080/events/1/register/1
+
+### wszystkie eventy runnera
+GET http://localhost:8080/runners/1/events
+
+### wszyscy zapisani biegacze na event
+GET http://localhost:8080/events/6/runners
+
+### usun biegacza z eventu
+DELETE http://localhost:8080/events/1/register/1
