@@ -3,6 +3,7 @@ package pl.coderslab.runapp.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class RouteService {
     // do narysowania mapy
 
     public RunRouteDetailsDto getRoute(Long id) {
-        RunRoute runRoute = runRouteRepository.findById(id).get();
+        RunRoute runRoute = runRouteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Run Route not found"));
         return new RunRouteDetailsDto(
                 runRoute.getId(),
                 runRoute.getGeometry(),
@@ -75,11 +76,11 @@ public class RouteService {
 
     public RouteResponseDto generateRoute(RouteRequestDto request) {
 
-        Runner runner = runnerRepository.findById(request.getRunnerId()).get();
+        Runner runner = runnerRepository.findById(request.getRunnerId()).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
         Location startLocation = locationRepository
-                .findById(request.getStartLocationId()).get();
+                .findById(request.getStartLocationId()).orElseThrow(() -> new EntityNotFoundException("Start Location not found"));
         Location endLocation = locationRepository
-                .findById(request.getEndLocationId()).get();
+                .findById(request.getEndLocationId()).orElseThrow(() -> new EntityNotFoundException("End Location not found"));
 
         RunRoute route = callOrsAndCreateRoute(
                 startLocation.getLatitude(),
@@ -108,8 +109,8 @@ public class RouteService {
 
     public RouteResponseDto generateLoopRoute(RouteByDistanceRequestDto request) {
 
-        Runner runner = runnerRepository.findById(request.getRunnerId()).get();
-        Location startLocation = locationRepository.findById(request.getStartLocationId()).get();
+        Runner runner = runnerRepository.findById(request.getRunnerId()).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Location startLocation = locationRepository.findById(request.getStartLocationId()).orElseThrow(() -> new EntityNotFoundException("Location not found"));
 
         RunRoute loop = callOrsLoop(
                 startLocation.getLatitude(),
