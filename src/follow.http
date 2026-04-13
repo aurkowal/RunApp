@@ -11,4 +11,7 @@ GET http://localhost:8080/runners/1/followers
 GET http://localhost:8080/runners/6/following
 
 ###
-GET http://localhost:8080/runners/6/feed
+GET http://localhost:8080/runners/6/feed-trainings
+
+###
+GET http://localhost:8080/runners/1/feed-all-activity
