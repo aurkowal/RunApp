@@ -1,14 +1,17 @@
 package pl.coderslab.runapp.service;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import pl.coderslab.runapp.DTO.follow.ActivityFeedDto;
 import pl.coderslab.runapp.DTO.follow.FollowResponseDto;
 import pl.coderslab.runapp.DTO.training.TrainingFeedDto;
 import pl.coderslab.runapp.entity.Follow;
 import pl.coderslab.runapp.entity.Runner;
-import pl.coderslab.runapp.repository.FollowRepository;
-import pl.coderslab.runapp.repository.RunnerRepository;
-import pl.coderslab.runapp.repository.TrainingRepository;
+import pl.coderslab.runapp.repository.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -17,11 +20,15 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final RunnerRepository runnerRepository;
     private final TrainingRepository trainingRepository;
+    private final EventRepository eventRepository;
+    private final EventRegistrationRepository eventRegistrationRepository;
 
-    public FollowService(FollowRepository followRepository, RunnerRepository runnerRepository, TrainingRepository trainingRepository) {
+    public FollowService(FollowRepository followRepository, RunnerRepository runnerRepository, TrainingRepository trainingRepository, EventRepository eventRepository, EventRegistrationRepository eventRegistrationRepository) {
         this.followRepository = followRepository;
         this.runnerRepository = runnerRepository;
         this.trainingRepository = trainingRepository;
+        this.eventRepository = eventRepository;
+        this.eventRegistrationRepository = eventRegistrationRepository;
     }
 
     public void follow(Long followerId, Long followedId) {
@@ -86,6 +93,43 @@ public class FollowService {
                                 training.getPace()
                         )
                 ).toList();
+    }
+
+    public List<ActivityFeedDto> getActivity(Long runnerId) {
+        //lista osob ktore obserwuje runner
+        List<Long> followedIds = followRepository.findByFollowerId(runnerId)
+                .stream().map(follow -> follow.getFollowed().getId()).toList();
+
+
+        // lista ze wszystkimi aktywnosciami na feed
+        List<ActivityFeedDto> activities = new ArrayList<>();
+
+        // treningi
+        activities.addAll(trainingRepository.findByRunnerIdInOrderByDateDesc(followedIds).stream()
+                .map(training -> new ActivityFeedDto(
+                        "Training",
+                        training.getRunner().getName() + " przebiegł/a " + training.getDistance()/1000 + " km tempem "+ training.getPace() + "min/km",
+                        training.getDate().atStartOfDay()
+                )).toList());
+
+        // eventy
+        activities.addAll(eventRegistrationRepository.findByRunnerIdIn(followedIds).stream()
+                .map(registration -> new ActivityFeedDto(
+                        "Event",
+                        registration.getRunner().getName() + " zapisał/a się na " + registration.getEvent().getName(),
+                        registration.getEvent().getDate().atStartOfDay()
+                )).toList());
+
+        // followersi
+        activities.addAll(followRepository.findByFollowedId(runnerId).stream()
+                .map(follow -> new ActivityFeedDto(
+                        "Follow",
+                        follow.getFollower().getName() + " zaczął/ęła Cię obserwować",
+                        LocalDateTime.now()
+                )).toList());
+
+
+        return activities.stream().sorted(Comparator.comparing(ActivityFeedDto::getDateTime).reversed()).toList();
     }
 
 

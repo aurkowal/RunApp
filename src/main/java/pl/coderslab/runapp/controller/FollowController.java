@@ -1,6 +1,7 @@
 package pl.coderslab.runapp.controller;
 
 import org.springframework.web.bind.annotation.*;
+import pl.coderslab.runapp.DTO.follow.ActivityFeedDto;
 import pl.coderslab.runapp.DTO.follow.FollowResponseDto;
 import pl.coderslab.runapp.DTO.training.TrainingFeedDto;
 import pl.coderslab.runapp.service.FollowService;
@@ -39,9 +40,14 @@ public class FollowController {
     }
 
     // FEED, czyli wszystkie treningi osob, ktore obserwuje runner o id
-    @GetMapping("/runners/{runnerId}/feed")
+    @GetMapping("/runners/{runnerId}/feed-trainings")
     public List<TrainingFeedDto> getFeed(@PathVariable("runnerId") Long runnerId) {
         return followService.getFeed(runnerId);
+    }
+
+    @GetMapping("/runners/{runnerId}/feed-all-activity")
+    public List<ActivityFeedDto> getAllActivity(@PathVariable("runnerId") Long runnerId) {
+        return followService.getActivity(runnerId);
     }
 
 }
