@@ -43,7 +43,4 @@ public class RouteController {
     }
 
 
-
-//    GET /routes/{id}             // szczegóły trasy
-
 }

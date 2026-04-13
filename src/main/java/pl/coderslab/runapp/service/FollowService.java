@@ -1,6 +1,6 @@
 package pl.coderslab.runapp.service;
 
-import org.springframework.stereotype.Component;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.coderslab.runapp.DTO.follow.ActivityFeedDto;
 import pl.coderslab.runapp.DTO.follow.FollowResponseDto;
@@ -20,14 +20,12 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final RunnerRepository runnerRepository;
     private final TrainingRepository trainingRepository;
-    private final EventRepository eventRepository;
     private final EventRegistrationRepository eventRegistrationRepository;
 
     public FollowService(FollowRepository followRepository, RunnerRepository runnerRepository, TrainingRepository trainingRepository, EventRepository eventRepository, EventRegistrationRepository eventRegistrationRepository) {
         this.followRepository = followRepository;
         this.runnerRepository = runnerRepository;
         this.trainingRepository = trainingRepository;
-        this.eventRepository = eventRepository;
         this.eventRegistrationRepository = eventRegistrationRepository;
     }
 
@@ -42,8 +40,8 @@ public class FollowService {
             return;
         }
 
-        Runner follower = runnerRepository.findById(followerId).get();
-        Runner followed = runnerRepository.findById(followedId).get();
+        Runner follower = runnerRepository.findById(followerId).orElseThrow(() -> new EntityNotFoundException("Follower not found"));
+        Runner followed = runnerRepository.findById(followedId).orElseThrow(() -> new EntityNotFoundException("Followed not found"));
 
         Follow follow = new Follow(follower, followed);
         followRepository.save(follow);

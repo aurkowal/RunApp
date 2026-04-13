@@ -10,10 +10,6 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
 
     List<Training> findByRunnerId(Long runnerId);
 
-    List<Training> findByRunRouteId(Long runRouteId);
-
-    List<Training> findByDateBetween(LocalDate start, LocalDate end);
-
     List<Training> findByRunnerIdInOrderByDateDesc(List<Long> runnerIds);
 
 }

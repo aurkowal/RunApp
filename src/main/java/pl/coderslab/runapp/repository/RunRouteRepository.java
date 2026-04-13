@@ -10,5 +10,4 @@ public interface RunRouteRepository extends JpaRepository<RunRoute, Long> {
 
     List<RunRoute> findAllByRunnerId(Long runnerId);
 
-    List<RunRoute> findByStartLocationId(Long locationId);
 }

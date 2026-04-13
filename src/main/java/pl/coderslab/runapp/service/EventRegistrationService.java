@@ -1,10 +1,9 @@
 package pl.coderslab.runapp.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.coderslab.runapp.DTO.event.EventParticipantDto;
-import pl.coderslab.runapp.DTO.event.EventRegistrationRequestDto;
 import pl.coderslab.runapp.DTO.event.EventResponseDto;
-import pl.coderslab.runapp.DTO.runner.RunnerResponseDto;
 import pl.coderslab.runapp.entity.Event;
 import pl.coderslab.runapp.entity.EventRegistration;
 import pl.coderslab.runapp.entity.Runner;
@@ -31,8 +30,8 @@ public class EventRegistrationService {
             return;
         }
 
-        Runner runner = runnerRepository.findById(runnerId).get();
-        Event event = eventRepository.findById(eventId).get();
+        Runner runner = runnerRepository.findById(runnerId).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event not found"));
 
         EventRegistration registration = new EventRegistration(runner, event);
         eventRegistrationRepository.save(registration);
