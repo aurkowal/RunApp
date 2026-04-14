@@ -1,16 +1,16 @@
 ### dodanie treningu do biegacza
-POST http://localhost:8080/runners/7/trainings
+POST http://localhost:8080/runners/70/trainings
 Content-Type: application/json
 
 {
   "date": "2026-03-28",
-  "distance": 10000,
+  "distance": 8000,
   "time": 4996,
-  "runRouteId": 70
+  "runRouteId": 68
 }
 
 ### pobierz treningi dla biegacza o Id
-GET http://localhost:8080/runners/1/trainings
+GET http://localhost:8080/runners/11/trainings
 
 ### pobierz trening po id
 GET  http://localhost:8080/trainings/12

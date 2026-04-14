@@ -4,11 +4,10 @@ package pl.coderslab.runapp.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.runapp.DTO.route.RouteByDistanceRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteRequestDto;
 import pl.coderslab.runapp.DTO.route.RouteResponseDto;
@@ -17,7 +16,6 @@ import pl.coderslab.runapp.DTO.runner.RunnerRouteGeometryDto;
 import pl.coderslab.runapp.entity.Location;
 import pl.coderslab.runapp.entity.RunRoute;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import pl.coderslab.runapp.entity.Runner;
 import pl.coderslab.runapp.repository.LocationRepository;
 import pl.coderslab.runapp.repository.RunRouteRepository;
@@ -49,7 +47,7 @@ public class RouteService {
     // do narysowania mapy
 
     public RunRouteDetailsDto getRoute(Long id) {
-        RunRoute runRoute = runRouteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Run Route not found"));
+        RunRoute runRoute = runRouteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Run Route not found"));
         return new RunRouteDetailsDto(
                 runRoute.getId(),
                 runRoute.getGeometry(),
@@ -76,11 +74,11 @@ public class RouteService {
 
     public RouteResponseDto generateRoute(RouteRequestDto request) {
 
-        Runner runner = runnerRepository.findById(request.getRunnerId()).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Runner runner = runnerRepository.findById(request.getRunnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Runner not found"));
         Location startLocation = locationRepository
-                .findById(request.getStartLocationId()).orElseThrow(() -> new EntityNotFoundException("Start Location not found"));
+                .findById(request.getStartLocationId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Start Location not found"));
         Location endLocation = locationRepository
-                .findById(request.getEndLocationId()).orElseThrow(() -> new EntityNotFoundException("End Location not found"));
+                .findById(request.getEndLocationId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"End Location not found"));
 
         RunRoute route = callOrsAndCreateRoute(
                 startLocation.getLatitude(),
@@ -109,7 +107,7 @@ public class RouteService {
 
     public RouteResponseDto generateLoopRoute(RouteByDistanceRequestDto request) {
 
-        Runner runner = runnerRepository.findById(request.getRunnerId()).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Runner runner = runnerRepository.findById(request.getRunnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Runner not found"));
         Location startLocation = locationRepository.findById(request.getStartLocationId()).orElseThrow(() -> new EntityNotFoundException("Location not found"));
 
         RunRoute loop = callOrsLoop(

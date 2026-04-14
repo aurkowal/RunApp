@@ -1,7 +1,9 @@
 package pl.coderslab.runapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.runapp.DTO.runner.RunnerCreateRequestDto;
 import pl.coderslab.runapp.DTO.runner.RunnerResponseDto;
 import pl.coderslab.runapp.entity.Runner;
@@ -30,7 +32,7 @@ public class RunnerService {
     }
 
     public RunnerResponseDto getRunnerById(Long id) {
-        Runner runner = runnerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Runner runner = runnerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Runner not found"));
         return toDto(runner);
     }
 
@@ -39,7 +41,7 @@ public class RunnerService {
     }
 
     public RunnerResponseDto updateRunner(Long id, RunnerCreateRequestDto request) {
-        Runner runner = runnerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Runner runner = runnerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Runner not found"));
         runner.setEmail(request.getEmail());
         runner.setName(request.getName());
         Runner saved = runnerRepository.save(runner);

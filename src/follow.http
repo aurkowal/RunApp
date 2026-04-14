@@ -1,14 +1,14 @@
 ###
-POST http://localhost:8080/runners/7/follow/6
+POST http://localhost:8080/runners/12/follow/2
 
 ###
 DELETE http://localhost:8080/runners/7/follow/1
 
 ###
-GET http://localhost:8080/runners/1/followers
+GET http://localhost:8080/runners/7/followers
 
 ###
-GET http://localhost:8080/runners/6/following
+GET http://localhost:8080/runners/7/following
 
 ###
 GET http://localhost:8080/runners/6/feed-trainings

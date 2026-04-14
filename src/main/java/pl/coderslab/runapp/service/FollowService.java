@@ -1,7 +1,9 @@
 package pl.coderslab.runapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.runapp.DTO.follow.ActivityFeedDto;
 import pl.coderslab.runapp.DTO.follow.FollowResponseDto;
 import pl.coderslab.runapp.DTO.training.TrainingFeedDto;
@@ -40,8 +42,8 @@ public class FollowService {
             return;
         }
 
-        Runner follower = runnerRepository.findById(followerId).orElseThrow(() -> new EntityNotFoundException("Follower not found"));
-        Runner followed = runnerRepository.findById(followedId).orElseThrow(() -> new EntityNotFoundException("Followed not found"));
+        Runner follower = runnerRepository.findById(followerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Follower not found"));
+        Runner followed = runnerRepository.findById(followedId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Followed not found"));
 
         Follow follow = new Follow(follower, followed);
         followRepository.save(follow);

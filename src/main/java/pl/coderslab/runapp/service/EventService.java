@@ -1,7 +1,9 @@
 package pl.coderslab.runapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.runapp.DTO.event.EventRequestDto;
 import pl.coderslab.runapp.DTO.event.EventResponseDto;
 import pl.coderslab.runapp.entity.Event;
@@ -31,7 +33,7 @@ public class EventService {
     }
 
     public EventResponseDto getEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event not found"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Event not found"));
         return toDto(event);
     }
 

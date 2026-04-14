@@ -1,7 +1,9 @@
 package pl.coderslab.runapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.runapp.DTO.training.TrainingCreateRequestDto;
 import pl.coderslab.runapp.DTO.training.TrainingResponseDto;
 import pl.coderslab.runapp.entity.RunRoute;
@@ -28,7 +30,7 @@ public class TrainingService {
     }
 
     public TrainingResponseDto addNewTraining(Long runnerId, TrainingCreateRequestDto request) {
-        Runner runner = runnerRepository.findById(runnerId).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Runner runner = runnerRepository.findById(runnerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Runner not found"));
         Training training = new Training();
         training.setRunner(runner);
         training.setDate(request.getDate());
@@ -38,7 +40,7 @@ public class TrainingService {
         if (request.getRunRouteId() != null) {
             RunRoute route = runRouteRepository
                     .findById(request.getRunRouteId())
-                    .orElseThrow(() -> new EntityNotFoundException("Run Route not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Run Route not found"));
             training.setRunRoute(route);
         }
 
@@ -55,7 +57,7 @@ public class TrainingService {
     }
 
     public TrainingResponseDto findTrainingById(Long id) {
-        return toDto(trainingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Training not found")));
+        return toDto(trainingRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Training not found")));
     }
 
     public void deleteTrainingById(Long id) {
