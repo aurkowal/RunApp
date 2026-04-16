@@ -23,7 +23,6 @@ public class Runner {
     private String name;
     private String email;
 
-
     @OneToMany(mappedBy = "runner")
     private List<RunRoute> runRoutes;
 
@@ -32,4 +31,8 @@ public class Runner {
 
     @OneToMany(mappedBy = "runner")
     private List<Location> locations;
+
+    @OneToMany(mappedBy = "runner")
+    private List<EventRegistration> registrations;
+
 }

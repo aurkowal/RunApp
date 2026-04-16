@@ -1,5 +1,6 @@
 package pl.coderslab.runapp.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.runapp.DTO.event.EventRequestDto;
 import pl.coderslab.runapp.DTO.event.EventResponseDto;
@@ -18,7 +19,7 @@ public class EventController {
     }
 
     @PostMapping
-    public EventResponseDto createEvent(@RequestBody EventRequestDto request) {
+    public EventResponseDto createEvent(@Valid @RequestBody EventRequestDto request) {
         return eventService.createEvent(request);
     }
 
@@ -36,4 +37,5 @@ public class EventController {
     public void deleteEvent(@PathVariable("id") Long id) {
         eventService.deleteEvent(id);
     }
+
 }

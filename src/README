@@ -1,0 +1,74 @@
+RunApp to backendowa aplikacja webowa służąca do zarządzania aktywnością biegową.
+Umożliwia:
+
+- rejestrowanie użytkowników (runnerów),
+- planowanie i zapisywanie treningów,
+- wyświetlanie tras na mapie,
+- obserwowanie innych użytkowników (followers),
+- zapisy na wydarzenia biegowe,
+- generowanie feedu aktywności obserwowanych użytkowników.
+
+Technologie:
+
+- Java 17
+- Spring Boot
+- Spring data JPA
+- Hibernate
+- MySQL
+- OpenRouteService API - do generowania tras
+- Leaflet, OpenStreetMap - frontend z widokiem tras na mapie
+- Maven
+
+Encje:
+
+- Runner -  użytkownik aplikacji
+- RunRoute - trasa biegu, generowanie polyline z ORS API
+- Training - zapisany trening biegowy przez uzytkownika
+- Location - zapisane punkty startowe (np. Praca, Dom, Park)
+- Follow - relacja obserwowania wzajemnie użytkowników
+- Event - wydarzenie biegowe
+- EventRegistartion - zapis użytkownika na wydarzenie
+
+Funkcjonalności:
+
+Runners:
+1. Tworzenie, edytowanie, usuwanie runner
+2. Pobieranie profilu runnera lub wszystkich dostępnych
+
+Follow:
+1. Obserwowanie i usuwanie obserwacji
+2. Lista obserwujących i obserwowanych
+
+RunRoute:
+1. Generowanie tras biegowych (pętla i trasa A->B) przez OpenRouteService
+2. Zapis geometry w postaci poyline
+3. Wyświetlanie tras na mapie
+
+Training:
+1. Dodawanie treningów
+2. Powiązanie treningu z trasą
+3. Wyświetlanie treningów w feedzie
+
+Event:
+1. Ręczne dodawanie wydarzeń biegowych
+2. Zapisy i wypisy na event (EventRegistration)
+3. Lista uczestników wydarzenia
+4. Lista eventów runnera
+
+Feed aktywności:
+1. Treningi obserwujących
+2. Nowe zapisy na wydarzenia
+3. Nowe obserwacje
+4. Sortowanie po dacie
+
+
+Architektura projektu:
+
+- Controller - obsługa endpointów
+- Service - logika aplikacji
+- Repository
+- DTO - transfer obiektów (RequestDTO, ResponseDTO)
+
+
+
+
