@@ -3,7 +3,7 @@ POST http://localhost:8080/events
 Content-Type: application/json
 
 {
-  "name": "Półmaraton Poznański",
+  "name": "abc",
   "date": "2026-04-16",
   "city": "Poznań",
   "distance": 21.098
@@ -16,10 +16,10 @@ GET http://localhost:8080/events
 GET http://localhost:8080/events/6
 
 ### usun event o id
-DELETE http://localhost:8080/events/7
+DELETE http://localhost:8080/events/9
 
 ### zapisz sie na event (eventid, runnerid)
-POST http://localhost:8080/events/1/register/1
+POST http://localhost:8080/events/5/register/20
 
 ### wszystkie eventy runnera
 GET http://localhost:8080/runners/1/events
@@ -29,3 +29,4 @@ GET http://localhost:8080/events/6/runners
 
 ### usun biegacza z eventu
 DELETE http://localhost:8080/events/1/register/1
+

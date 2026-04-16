@@ -1,6 +1,8 @@
 package pl.coderslab.runapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 @Entity
@@ -11,20 +13,16 @@ import lombok.*;
 @NoArgsConstructor
 public class RunRoute {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private double distance;   //metry, rzeczywisty z API
     private double duration;   //sekundy, czas podany z API, orientacyjny czas chodu
-
     private double plannedDistance;  // zadany przez usera
-
 
     @Column(columnDefinition = "TEXT")
     private String geometry;   //polyline z ORS
-
 
     @ManyToOne
     @JoinColumn(name = "runner_id")

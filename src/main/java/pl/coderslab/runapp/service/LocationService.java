@@ -1,7 +1,9 @@
 package pl.coderslab.runapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.runapp.DTO.location.LocationCreateRequestDto;
 import pl.coderslab.runapp.DTO.location.LocationResponseDto;
 import pl.coderslab.runapp.entity.Location;
@@ -24,7 +26,7 @@ public class LocationService {
     }
 
     public LocationResponseDto createLocation(Long runnerId, LocationCreateRequestDto request) {
-        Runner runner = runnerRepository.findById(runnerId).orElseThrow(() -> new EntityNotFoundException("Runner not found"));
+        Runner runner = runnerRepository.findById(runnerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Runner not found"));
         Location location = new Location();
         location.setLatitude(request.getLatitude());
         location.setLongitude(request.getLongitude());
@@ -36,7 +38,7 @@ public class LocationService {
     }
 
     public LocationResponseDto findLocationById(Long id) {
-        Location location = locationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Location not found"));
+        Location location = locationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Location not found"));
         return toDto(location);
     }
 

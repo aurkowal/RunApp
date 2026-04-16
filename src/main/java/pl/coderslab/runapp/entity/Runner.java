@@ -1,6 +1,9 @@
 package pl.coderslab.runapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +23,6 @@ public class Runner {
     private String name;
     private String email;
 
-
     @OneToMany(mappedBy = "runner")
     private List<RunRoute> runRoutes;
 
@@ -29,4 +31,8 @@ public class Runner {
 
     @OneToMany(mappedBy = "runner")
     private List<Location> locations;
+
+    @OneToMany(mappedBy = "runner")
+    private List<EventRegistration> registrations;
+
 }

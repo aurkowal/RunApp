@@ -1,11 +1,12 @@
 ### dodanie lokalizacji do biegacza
-POST http://localhost:8080/runners/4/locations
+POST http://localhost:8080/runners/12/locations
 Content-Type: application/json
 
+
 {
-  "placeName": "Legionowo",
-  "latitude": 52.4015,
-  "longitude": 20.9266
+  "placeName": "Żoliborz",
+  "latitude": 52.2690,
+  "longitude": 20.9780
 }
 
 
@@ -14,7 +15,7 @@ Content-Type: application/json
 GET http://localhost:8080/locations/20
 
 ### wszystkie lokacje danego biegacza
-GET http://localhost:8080/runners/6/locations
+GET http://localhost:8080/runners/11/locations
 
 ###
 DELETE http://localhost:8080/locations/21
